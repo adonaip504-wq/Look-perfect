@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Look Perfect — Moda para toda la familia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --ink: #1c1b19; --ink-soft: #322f2b; --smoke: #6f6a63; --smoke-light: #a39d93;
+  --cream: #f7f2e9; --beige: #e6d9bd; --beige-deep: #cdb98c; --white: #fffdf8;
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-body: 'Work Sans', -apple-system, sans-serif;
+  --radius: 2px; --ease: cubic-bezier(0.22, 1, 0.36, 1);
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--cream); color: var(--ink); font-family: var(--font-body); font-weight: 300; -webkit-font-smoothing: antialiased; }
+h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 500; letter-spacing: 0.01em; margin: 0; }
+a { color: inherit; text-decoration: none; }
+button { font-family: var(--font-body); cursor: pointer; }
+a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+
+.site-header { position: sticky; top: 0; z-index: 40; background: rgba(247,242,233,0.9); backdrop-filter: blur(8px); border-bottom: 1px solid var(--beige); }
+.site-header .bar { display: flex; align-items: center; justify-content: space-between; padding: 18px 24px; }
+.wordmark { font-family: var(--font-display); font-size: 1.5rem; letter-spacing: 0.06em; cursor: pointer; background:none; border:none; }
+.header-actions { display: flex; align-items: center; gap: 18px; font-size: 0.85rem; color: var(--smoke); }
+.header-actions a, .header-actions button.link { background:none; border:none; font-size:0.85rem; color:var(--smoke); font-family:var(--font-body); }
+.cart-pill { display: flex; align-items: center; gap: 8px; border: 1px solid var(--ink); padding: 8px 16px; border-radius: 999px; font-size: 0.8rem; letter-spacing: 0.04em; background:none; }
+
+.hero { padding: 96px 24px 64px; text-align: center; position: relative; overflow: hidden; }
+.hero-eyebrow { font-size: 0.72rem; letter-spacing: 0.32em; text-transform: uppercase; color: var(--smoke); margin-bottom: 18px; }
+.hero-title { font-size: clamp(3rem, 9vw, 6rem); line-height: 0.95; color: var(--ink); animation: fadeUp .7s var(--ease) both; }
+.hero-underline { height: 1px; background: var(--ink); margin: 22px auto 0; transform-origin: left; animation: growLine .9s .3s var(--ease) both; }
+@keyframes growLine { from{transform:scaleX(0)} to{transform:scaleX(1)} }
+@keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+.hero-sub { margin: 22px auto 0; max-width: 480px; color: var(--smoke); font-size: 1rem; font-weight: 300; }
+
+.categorias { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--beige); margin-top: 56px; }
+@media (max-width: 720px) { .categorias { grid-template-columns: 1fr; } }
+.categoria-card { background: var(--white); padding: 56px 24px; text-align: center; position: relative; transition: background .4s var(--ease); border:none; animation: fadeUp .5s var(--ease) both; font-family: var(--font-body); }
+.categoria-card:nth-child(1){animation-delay:.3s} .categoria-card:nth-child(2){animation-delay:.42s} .categoria-card:nth-child(3){animation-delay:.54s}
+.categoria-card:hover, .categoria-card:focus-visible { background: var(--ink); color: var(--white); }
+.categoria-card .num { font-size: 0.7rem; color: var(--smoke-light); letter-spacing: 0.2em; }
+.categoria-card:hover .num { color: var(--beige); }
+.categoria-card h3 { font-size: 2rem; margin-top: 14px; }
+.categoria-card .arrow { display: inline-block; margin-top: 18px; font-size: 0.8rem; letter-spacing: 0.08em; }
+
+.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--ink); color: var(--white); padding: 14px 26px; border-radius: 999px; font-size: 0.85rem; z-index: 100; box-shadow: 0 12px 30px rgba(0,0,0,0.25); display: flex; align-items: center; gap: 12px; }
+.toast button { background: none; border: none; color: var(--beige); font-size: 0.9rem; }
+
+.page-heading { padding: 48px 24px 24px; border-bottom: 1px solid var(--beige); }
+.breadcrumb { font-size: 0.75rem; color: var(--smoke); letter-spacing: 0.05em; }
+.breadcrumb button { background:none;border:none;color:var(--smoke);font-size:0.75rem; }
+.breadcrumb button:hover { color: var(--ink); }
+.page-heading h1 { font-size: clamp(2rem, 5vw, 3rem); margin-top: 10px; }
+
+.subcat-tabs { display: flex; gap: 10px; flex-wrap: wrap; padding: 24px; }
+.subcat-tab { border: 1px solid var(--beige-deep); padding: 8px 18px; border-radius: 999px; font-size: 0.8rem; color: var(--smoke); background: transparent; }
+.subcat-tab.active, .subcat-tab:hover { background: var(--ink); border-color: var(--ink); color: var(--white); }
+
+.product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 28px; padding: 12px 24px 80px; }
+.product-card { background: var(--white); border: 1px solid var(--beige); overflow: hidden; display: flex; flex-direction: column; }
+.product-photo { aspect-ratio: 3/4; background: var(--beige); overflow: hidden; display:block; border:none; padding:0; width:100%; }
+.product-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
+.product-card:hover .product-photo img { transform: scale(1.05); }
+.product-info { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+.product-info h4 { font-size: 1.05rem; }
+.product-info .price { font-family: var(--font-display); font-size: 1.2rem; }
+.product-info .desc { font-size: 0.8rem; color: var(--smoke); flex: 1; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--ink); background: var(--ink); color: var(--white); padding: 11px 20px; font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; border-radius: var(--radius); transition: background .3s var(--ease), color .3s var(--ease); }
+.btn:hover { background: transparent; color: var(--ink); }
+.btn-outline { background: transparent; color: var(--ink); }
+.btn-outline:hover { background: var(--ink); color: var(--white); }
+.btn-block { width: 100%; }
+
+.cart-drawer { position: fixed; top: 0; right: 0; height: 100vh; width: min(400px, 100vw); background: var(--white); box-shadow: -20px 0 40px rgba(0,0,0,0.15); z-index: 90; display: none; flex-direction: column; }
+.cart-drawer.open { display: flex; }
+.cart-header { padding: 24px; border-bottom: 1px solid var(--beige); display: flex; justify-content: space-between; align-items: center; }
+.cart-items { flex: 1; overflow-y: auto; padding: 0 24px; }
+.cart-line { display: flex; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--beige); }
+.cart-line img { width: 64px; height: 80px; object-fit: cover; }
+.cart-line .qty-controls { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+.cart-line .qty-controls button { border: 1px solid var(--smoke-light); background: none; width: 22px; height: 22px; border-radius: 50%; font-size: 0.8rem; line-height: 1; }
+.cart-footer { padding: 24px; border-top: 1px solid var(--beige); }
+.cart-total { display: flex; justify-content: space-between; font-family: var(--font-display); font-size: 1.3rem; margin-bottom: 18px; }
+.overlay { position: fixed; inset: 0; background: rgba(28,27,25,0.35); z-index: 80; display:none; }
+.overlay.open { display:block; }
+
+.product-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; padding: 48px 24px 96px; }
+@media (max-width: 780px) { .product-detail { grid-template-columns: 1fr; gap: 28px; padding-top: 24px; } }
+.detail-photo { aspect-ratio: 3/4; background: var(--beige); overflow: hidden; }
+.detail-photo img { width: 100%; height: 100%; object-fit: cover; }
+.detail-info .price { font-family: var(--font-display); font-size: 1.8rem; margin: 14px 0; }
+.detail-info .desc { color: var(--smoke); line-height: 1.7; margin-bottom: 24px; }
+.detail-actions { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+
+.field { margin-bottom: 18px; text-align: left; }
+.field label { display: block; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--smoke); margin-bottom: 6px; }
+.field input, .field textarea, .field select { width: 100%; padding: 12px 14px; border: 1px solid var(--beige-deep); background: var(--white); font-family: var(--font-body); font-size: 0.9rem; border-radius: var(--radius); }
+.field textarea { resize: vertical; min-height: 90px; }
+
+.admin-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+@media (max-width: 780px) { .admin-shell { grid-template-columns: 1fr; } }
+.admin-side { background: var(--ink); color: var(--white); padding: 32px 20px; }
+.admin-side h2 { font-size: 1.2rem; margin-bottom: 32px; }
+.admin-nav { display: flex; flex-direction: column; gap: 4px; }
+.admin-nav button { background: none; border: none; color: var(--beige); text-align: left; padding: 12px 10px; font-size: 0.85rem; border-radius: 4px; font-family: var(--font-body); }
+.admin-nav button.active, .admin-nav button:hover { background: rgba(255,255,255,0.08); color: var(--white); }
+.admin-main { padding: 40px 32px; background: var(--cream); }
+.admin-login { max-width: 380px; margin: 12vh auto; padding: 40px; background: var(--white); border: 1px solid var(--beige); }
+.stat-row { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
+.stat-box { background: var(--white); border: 1px solid var(--beige); padding: 20px 24px; min-width: 140px; }
+.stat-box .n { font-family: var(--font-display); font-size: 1.8rem; }
+.stat-box .l { font-size: 0.72rem; color: var(--smoke); text-transform: uppercase; letter-spacing: 0.05em; }
+.admin-table { width: 100%; border-collapse: collapse; background: var(--white); }
+.admin-table th, .admin-table td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--beige); font-size: 0.85rem; }
+.admin-table th { color: var(--smoke); font-weight: 500; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; background: var(--beige); }
+.badge.pendiente { background: #f0dcb0; } .badge.enviado { background: #cfe3d3; }
+
+.wa-float { position: fixed; bottom: 24px; right: 24px; background: #1c1b19; color: var(--white); padding: 14px 18px; border-radius: 999px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; box-shadow: 0 12px 24px rgba(0,0,0,0.2); z-index: 70; border:none; }
+.chat-float { position: fixed; bottom: 90px; right: 24px; background: #322f2b; color: var(--white); padding: 14px 18px; border-radius: 999px; font-size: 0.8rem; box-shadow: 0 12px 24px rgba(0,0,0,0.2); z-index: 70; border:none; }
+.chat-panel { position: fixed; bottom: 24px; right: 24px; width: min(340px, 90vw); background: var(--white); border: 1px solid var(--beige); box-shadow: 0 20px 40px rgba(0,0,0,0.2); z-index: 95; display: none; flex-direction: column; height: 420px; }
+.chat-panel.open { display: flex; }
+.chat-head { background: var(--ink); color: var(--white); padding: 14px 18px; display:flex; justify-content: space-between; align-items:center; font-size:0.85rem; }
+.chat-head button { background:none;border:none;color:white; }
+.chat-body { flex: 1; overflow-y: auto; padding: 14px; display:flex; flex-direction:column; gap:10px; }
+.chat-msg { max-width: 80%; padding: 8px 12px; font-size: 0.82rem; border-radius: 10px; }
+.chat-msg.cliente { align-self: flex-end; background: var(--ink); color: var(--white); }
+.chat-msg.vendedora { align-self: flex-start; background: var(--beige); }
+.chat-input { display: flex; border-top: 1px solid var(--beige); }
+.chat-input input { flex: 1; border: none; padding: 12px; font-size: 0.85rem; }
+.chat-input button { border: none; background: var(--ink); color: var(--white); padding: 0 16px; }
+
+.empty-state { text-align: center; padding: 60px 24px; color: var(--smoke); }
+.footer { border-top: 1px solid var(--beige); padding: 32px 24px; text-align: center; font-size: 0.75rem; color: var(--smoke); }
+.hidden { display: none !important; }
+
+/* Banner de configuración pendiente */
+.config-banner { background:#f0dcb0; color:#4a3b1c; padding:10px 16px; text-align:center; font-size:0.78rem; }
+</style>
+</head>
+<body>
+
+<!-- ======================= CONFIGURACIÓN ======================= -->
+<!-- Edita estos 3 valores con los datos de tu proyecto de Supabase. -->
+<!-- Es lo ÚNICO que necesitas cambiar en todo el archivo.            -->
+<script>
+  const SUPABASE_URL = "https://tqkptuznsykwqbasibjb.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_iu_hCN0FVQKTIOh-0wJcig_BMDu0L-e";
+  const WHATSAPP_NUMBER = "5363806605";
+</script>
+<!-- =============================================================== -->
+
+<div id="config-banner"></div>
+
+<header class="site-header">
+  <div class="bar">
+    <button class="wordmark" onclick="goTo('landing')">Look Perfect</button>
+    <div class="header-actions">
+      <button class="link" onclick="goToCategoria('mujer')">Mujer</button>
+      <button class="link" onclick="goToCategoria('hombre')">Hombre</button>
+      <button class="link" onclick="goToCategoria('ninos')">Niños</button>
+      <button class="cart-pill" onclick="openCart()">🛍 <span id="cart-count-label">Carrito</span></button>
+      <button class="link" onclick="goTo('admin-login')" style="opacity:0.5">Admin</button>
+    </div>
+  </div>
+</header>
+
+<div id="toast-root"></div>
+
+<!-- ======================= VISTA: LANDING ======================= -->
+<section id="view-landing">
+  <div class="hero">
+    <div class="hero-eyebrow">Santiago de Cuba</div>
+    <h1 class="hero-title">Look Perfect</h1>
+    <div class="hero-underline"></div>
+    <p class="hero-sub">Ropa cuidadosamente seleccionada para mujer, hombre y niños. Elige tu categoría y encuentra tu estilo.</p>
+  </div>
+  <div class="categorias">
+    <button class="categoria-card" onclick="goToCategoria('mujer')">
+      <div class="num">01</div><h3>Mujer</h3><div class="arrow">Ver muestrario →</div>
+    </button>
+    <button class="categoria-card" onclick="goToCategoria('hombre')">
+      <div class="num">02</div><h3>Hombre</h3><div class="arrow">Ver muestrario →</div>
+    </button>
+    <button class="categoria-card" onclick="goToCategoria('ninos')">
+      <div class="num">03</div><h3>Niños</h3><div class="arrow">Ver muestrario →</div>
+    </button>
+  </div>
+</section>
+
+<!-- ======================= VISTA: CATEGORÍA (subcategorías) ======================= -->
+<section id="view-categoria" class="hidden">
+  <div class="page-heading">
+    <div class="breadcrumb"><button onclick="goTo('landing')">Look Perfect</button> / <span id="cat-nombre"></span></div>
+    <h1 id="cat-titulo"></h1>
+  </div>
+  <p class="empty-state" id="cat-loading">Cargando muestrario...</p>
+  <div class="subcat-tabs" id="cat-subcats"></div>
+</section>
+
+<!-- ======================= VISTA: PRODUCTOS (grid) ======================= -->
+<section id="view-productos" class="hidden">
+  <div class="page-heading">
+    <div class="breadcrumb" id="prod-breadcrumb"></div>
+    <h1 id="prod-titulo"></h1>
+  </div>
+  <p class="empty-state" id="prod-loading">Cargando productos...</p>
+  <div class="product-grid" id="prod-grid"></div>
+</section>
+
+<!-- ======================= VISTA: DETALLE PRODUCTO ======================= -->
+<section id="view-detalle" class="hidden">
+  <div id="detalle-content"><p class="empty-state">Cargando...</p></div>
+</section>
+
+<!-- ======================= VISTA: ADMIN LOGIN ======================= -->
+<section id="view-admin-login" class="hidden">
+  <form class="admin-login" id="login-form" onsubmit="return adminLogin(event)">
+    <h2 style="margin-bottom:24px">Acceso de la dueña</h2>
+    <div class="field"><label>Correo</label><input type="email" id="login-email" required /></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="login-password" required /></div>
+    <p id="login-error" style="color:#a33;font-size:0.85rem;margin-bottom:12px;display:none"></p>
+    <button class="btn btn-block" id="login-btn">Entrar</button>
+  </form>
+</section>
+
+<!-- ======================= VISTA: ADMIN PANEL ======================= -->
+<section id="view-admin-panel" class="hidden">
+  <div class="admin-shell">
+    <aside class="admin-side">
+      <h2>Look Perfect</h2>
+      <nav class="admin-nav">
+        <button class="active" data-sec="publicar" onclick="showAdminSection('publicar')">Publicar producto</button>
+        <button data-sec="pedidos" onclick="showAdminSection('pedidos')">Ver pedidos</button>
+        <button data-sec="editar" onclick="showAdminSection('editar')">Editar productos</button>
+        <button data-sec="mensajes" onclick="showAdminSection('mensajes')">Mensajes</button>
+      </nav>
+      <button onclick="adminLogout()" style="margin-top:40px;background:none;border:1px solid #6f6a63;color:#e6d9bd;padding:10px 14px;border-radius:4px;font-size:0.8rem">Cerrar sesión</button>
+    </aside>
+    <main class="admin-main">
+
+      <section id="admin-sec-publicar" class="admin-sec">
+        <div style="max-width:520px">
+          <h2 style="margin-bottom:24px">Publicar producto</h2>
+          <form id="form-publicar" onsubmit="return publicarProducto(event)">
+            <div class="field"><label>Foto</label><input type="file" accept="image/*" id="pub-foto" required />
+              <img id="pub-preview" style="width:120px;margin-top:10px;aspect-ratio:3/4;object-fit:cover;display:none" /></div>
+            <div class="field"><label>Nombre del producto</label><input required id="pub-nombre" /></div>
+            <div class="field"><label>Precio</label><input type="number" min="0" step="0.01" required id="pub-precio" /></div>
+            <div class="field"><label>Descripción</label><textarea required id="pub-descripcion"></textarea></div>
+            <div class="field"><label>Categoría</label>
+              <select id="pub-categoria"><option value="mujer">Mujer</option><option value="hombre">Hombre</option><option value="ninos">Niños</option></select>
+            </div>
+            <div class="field"><label>Catálogo (subcategoría)</label>
+              <select id="pub-subcategoria" onchange="onCambioSubcategoriaForm()"></select>
+            </div>
+            <div class="field hidden" id="pub-subcategoria-nueva-wrap">
+              <label>Nombre del catálogo nuevo</label>
+              <input id="pub-subcategoria-nueva" placeholder="Ej: Vestidos de fiesta" />
+            </div>
+            <div class="field"><label>Tallas disponibles</label><div id="pub-tallas" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>
+            <p id="pub-mensaje" style="font-size:0.85rem;margin-bottom:14px"></p>
+            <button class="btn" id="pub-submit">Publicar producto</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="admin-sec-pedidos" class="admin-sec hidden">
+        <h2 style="margin-bottom:24px">Pedidos</h2>
+        <div class="stat-row" id="pedidos-stats"></div>
+        <button class="btn btn-outline" style="margin-bottom:20px" onclick="vaciarPedidos()">Vaciar todos los pedidos</button>
+        <div id="pedidos-empty" class="empty-state hidden">Aún no hay pedidos.</div>
+        <table class="admin-table hidden" id="pedidos-table">
+          <thead><tr><th>Cliente</th><th>Teléfono</th><th>Total</th><th>Estado</th><th>Vendido</th><th>Fecha</th><th></th></tr></thead>
+          <tbody id="pedidos-body"></tbody>
+        </table>
+      </section>
+
+      <section id="admin-sec-editar" class="admin-sec hidden">
+        <h2 style="margin-bottom:24px">Editar productos</h2>
+        <table class="admin-table">
+          <thead><tr><th>Foto</th><th>Nombre</th><th>Categoría</th><th>Precio</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="editar-body"></tbody>
+        </table>
+      </section>
+
+      <section id="admin-sec-mensajes" class="admin-sec hidden">
+        <h2 style="margin-bottom:24px">Mensajes</h2>
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:20px">
+          <div id="msg-clientes"></div>
+          <div id="msg-panel"><p style="color:#6f6a63">Selecciona una conversación.</p></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+</section>
+
+<!-- ======================= CARRITO (siempre presente) ======================= -->
+<div class="overlay" id="cart-overlay" onclick="closeCart()"></div>
+<aside class="cart-drawer" id="cart-drawer">
+  <div class="cart-header"><h3>Tu carrito</h3><button onclick="closeCart()" style="background:none;border:none;font-size:1.1rem">✕</button></div>
+  <div id="cart-body-wrap" style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+    <div class="cart-items" id="cart-items"></div>
+    <form class="cart-footer hidden" id="cart-footer" onsubmit="return enviarPedido(event)">
+      <div class="cart-total"><span>Total</span><span id="cart-total-label">$0.00</span></div>
+      <div class="field"><label>Nombre</label><input required id="co-nombre" /></div>
+      <div class="field"><label>Teléfono</label><input required id="co-telefono" /></div>
+      <div class="field"><label>Dirección de entrega</label><input id="co-direccion" /></div>
+      <button class="btn btn-block" type="submit" id="co-submit">Enviar pedido</button>
+    </form>
+    <div id="cart-success" class="empty-state hidden">
+      <p>Pedido enviado. Te contactaremos pronto para confirmar la entrega.</p>
+      <button class="btn" style="margin-top:16px" onclick="cartSuccessContinue()">Seguir comprando</button>
+    </div>
+  </div>
+</aside>
+
+<!-- ======================= WHATSAPP + CHAT (siempre presentes) ======================= -->
+<a class="wa-float" id="wa-link" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+<button class="chat-float" id="chat-toggle" onclick="toggleChat()">Escribir a la tienda</button>
+<div class="chat-panel" id="chat-panel">
+  <div class="chat-head"><span>Chat con Look Perfect</span><button onclick="toggleChat()">✕</button></div>
+  <div class="chat-body" id="chat-body"></div>
+  <form class="chat-input" onsubmit="return enviarChat(event)">
+    <input id="chat-text" placeholder="Escribe un mensaje..." autocomplete="off" />
+    <button type="submit">Enviar</button>
+  </form>
+</div>
+
+<!-- ======================= EDITAR PRODUCTO (modal) ======================= -->
+<div class="overlay" id="edit-overlay" onclick="cerrarEditar()"></div>
+<div id="edit-modal" style="display:none;position:fixed;top:0;right:0;height:100vh;width:min(480px,100vw);background:var(--white);z-index:96;overflow-y:auto;box-shadow:-20px 0 40px rgba(0,0,0,.15)">
+  <div class="cart-header"><h3>Editar producto</h3><button onclick="cerrarEditar()" style="background:none;border:none;font-size:1.1rem">✕</button></div>
+  <form id="form-editar" onsubmit="return guardarEdicion(event)" style="padding:24px">
+    <div class="field"><label>Foto actual</label><img id="edit-foto-actual" style="width:120px;aspect-ratio:3/4;object-fit:cover;display:block;margin-bottom:8px" /></div>
+    <div class="field"><label>Cambiar foto (opcional)</label><input type="file" accept="image/*" id="edit-foto-nueva" /></div>
+    <div class="field"><label>Nombre</label><input required id="edit-nombre" /></div>
+    <div class="field"><label>Precio</label><input type="number" min="0" step="0.01" required id="edit-precio" /></div>
+    <div class="field"><label>Descripción</label><textarea required id="edit-descripcion"></textarea></div>
+    <div class="field"><label>Categoría</label>
+      <select id="edit-categoria" onchange="cargarSubcategoriasEdit()"><option value="mujer">Mujer</option><option value="hombre">Hombre</option><option value="ninos">Niños</option></select>
+    </div>
+    <div class="field"><label>Catálogo</label><select id="edit-subcategoria" onchange="onCambioSubcategoriaEdit()"></select></div>
+    <div class="field hidden" id="edit-subcategoria-nueva-wrap"><label>Nombre del catálogo nuevo</label><input id="edit-subcategoria-nueva" /></div>
+    <div class="field"><label>Tallas disponibles</label><div id="edit-tallas" style="display:flex;gap:8px;flex-wrap:wrap"></div></div>
+    <div class="field"><label>Estado</label>
+      <select id="edit-publicado"><option value="true">Publicado</option><option value="false">Oculto</option></select>
+    </div>
+    <p id="edit-mensaje" style="font-size:0.85rem;margin-bottom:14px"></p>
+    <button class="btn btn-block" id="edit-submit">Guardar cambios</button>
+  </form>
+</div>
+
+<footer class="footer">Look Perfect · Santiago de Cuba</footer>
+
+<script>
+/* =======================================================================
+   LOOK PERFECT — Toda la lógica de la tienda en un solo archivo.
+   No necesitas tocar nada de aquí para abajo, solo la configuración
+   de arriba del todo (SUPABASE_URL, SUPABASE_ANON_KEY, WHATSAPP_NUMBER).
+   ======================================================================= */
+
+const configListo = !SUPABASE_URL.includes("TU-PROYECTO");
+const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+if (!configListo) {
+  document.getElementById("config-banner").innerHTML =
+    '<div class="config-banner">⚠ Todavía no conectaste tu base de datos de Supabase — edita SUPABASE_URL y SUPABASE_ANON_KEY al inicio del archivo. Mientras tanto puedes ver el diseño, pero no aparecerán productos reales.</div>';
+}
+
+const NOMBRES_CAT = { mujer: "Mujer", hombre: "Hombre", ninos: "Niños" };
+const TALLAS = ["XS", "S", "M", "L", "XL", "XXL"];
+let catActual = "mujer";
+let subActual = "";
+let clienteId = localStorage.getItem("lp-cliente-id");
+if (!clienteId) { clienteId = crypto.randomUUID(); localStorage.setItem("lp-cliente-id", clienteId); }
+
+// ---------------- Navegación entre vistas ----------------
+function goTo(vista) {
+  document.querySelectorAll('[id^="view-"]').forEach((v) => v.classList.add("hidden"));
+  document.getElementById("view-" + vista).classList.remove("hidden");
+  window.scrollTo(0, 0);
+}
+function goToCategoria(cat) {
+  catActual = cat;
+  goTo("categoria");
+  document.getElementById("cat-nombre").textContent = NOMBRES_CAT[cat];
+  document.getElementById("cat-titulo").textContent = NOMBRES_CAT[cat];
+  cargarSubcategorias(cat);
+}
+function goToProductos(cat, sub) {
+  catActual = cat; subActual = sub;
+  goTo("productos");
+  document.getElementById("prod-titulo").textContent = sub;
+  document.getElementById("prod-breadcrumb").innerHTML =
+    `<button onclick="goTo('landing')">Look Perfect</button> / <button onclick="goToCategoria('${cat}')">${NOMBRES_CAT[cat]}</button> / ${sub}`;
+  cargarProductos(cat, sub);
+}
+function goToDetalle(id) {
+  goTo("detalle");
+  cargarDetalle(id);
+}
+
+// ---------------- Toast de bienvenida ----------------
+if (!sessionStorage.getItem("lp-welcomed")) {
+  setTimeout(() => {
+    const el = document.getElementById("toast-root");
+    el.innerHTML = `<div class="toast"><span>Bienvenida a Look Perfect. Elige tu estilo.</span><button onclick="this.closest('.toast').remove(); sessionStorage.setItem('lp-welcomed','1')">✕</button></div>`;
+  }, 600);
+}
+
+// ---------------- Carga de datos (Supabase) ----------------
+async function cargarSubcategorias(cat) {
+  document.getElementById("cat-loading").classList.remove("hidden");
+  document.getElementById("cat-subcats").innerHTML = "";
+  const { data } = await supa.from("productos").select("subcategoria").eq("categoria", cat).eq("publicado", true);
+  document.getElementById("cat-loading").classList.add("hidden");
+  const unicas = [...new Set((data || []).map((d) => d.subcategoria))];
+  const wrap = document.getElementById("cat-subcats");
+  if (unicas.length === 0) {
+    wrap.innerHTML = `<p class="empty-state">Todavía no hay productos publicados en esta categoría.</p>`;
+    return;
+  }
+  wrap.innerHTML = unicas.map((s) => `<button class="subcat-tab" onclick="goToProductos('${cat}','${s}')">${s}</button>`).join("");
+}
+
+async function cargarProductos(cat, sub) {
+  document.getElementById("prod-loading").classList.remove("hidden");
+  document.getElementById("prod-grid").innerHTML = "";
+  const { data } = await supa.from("productos").select("*").eq("categoria", cat).eq("subcategoria", sub).eq("publicado", true).order("creado_en", { ascending: false });
+  document.getElementById("prod-loading").classList.add("hidden");
+  const grid = document.getElementById("prod-grid");
+  if (!data || data.length === 0) {
+    grid.innerHTML = `<p class="empty-state">No hay productos disponibles en este momento.</p>`;
+    return;
+  }
+  grid.innerHTML = data.map(tarjetaProducto).join("");
+}
+
+function tarjetaProducto(p) {
+  const tallas = p.tallas || [];
+  const selectId = "sel-" + p.id;
+  const tallasHtml = tallas.length
+    ? `<div class="field" style="margin-bottom:8px"><label>Talla</label><select id="${selectId}">${tallas.map((t) => `<option value="${t}">${t}</option>`).join("")}</select></div>`
+    : "";
+  return `
+    <div class="product-card">
+      <button class="product-photo" onclick="goToDetalle('${p.id}')"><img src="${p.foto_url}" alt="${p.nombre}" loading="lazy" /></button>
+      <div class="product-info">
+        <h4>${p.nombre}</h4>
+        <span class="price">$${Number(p.precio).toFixed(2)}</span>
+        <p class="desc">${p.descripcion || ""}</p>
+        ${tallasHtml}
+        <button class="btn btn-block" onclick="agregarAlCarrito('${p.id}','${p.nombre.replace(/'/g,"\\'")}',${p.precio},'${p.foto_url}','${selectId}')">Agregar al carrito</button>
+      </div>
+    </div>`;
+}
+
+async function cargarDetalle(id) {
+  const wrap = document.getElementById("detalle-content");
+  wrap.innerHTML = `<p class="empty-state">Cargando...</p>`;
+  const { data: p } = await supa.from("productos").select("*").eq("id", id).single();
+  if (!p) { wrap.innerHTML = `<p class="empty-state">No se encontró este producto.</p>`; return; }
+  const tallas = p.tallas || [];
+  const tallasHtml = tallas.length
+    ? `<div class="field"><label>Talla</label><select id="detalle-talla">${tallas.map((t) => `<option value="${t}">${t}</option>`).join("")}</select></div>`
+    : "";
+  wrap.innerHTML = `
+    <div class="product-detail">
+      <div class="detail-photo"><img src="${p.foto_url}" alt="${p.nombre}" /></div>
+      <div class="detail-info">
+        <div class="breadcrumb"><button onclick="goTo('landing')">Look Perfect</button> / <button onclick="goToCategoria('${p.categoria}')">${NOMBRES_CAT[p.categoria]}</button></div>
+        <h1>${p.nombre}</h1>
+        <div class="price">$${Number(p.precio).toFixed(2)}</div>
+        <p class="desc">${p.descripcion || ""}</p>
+        ${tallasHtml}
+        <div class="detail-actions">
+          <button class="btn" onclick="agregarAlCarrito('${p.id}','${p.nombre.replace(/'/g,"\\'")}',${p.precio},'${p.foto_url}','detalle-talla')">Agregar al carrito</button>
+          <a class="btn btn-outline" target="_blank" rel="noopener noreferrer" href="https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent('Hola, me interesa "' + p.nombre + '" de Look Perfect.')}">Preguntar por WhatsApp</a>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ---------------- Carrito ----------------
+function getCart() { try { return JSON.parse(localStorage.getItem("lp-cart")) || []; } catch { return []; } }
+function saveCart(items) { localStorage.setItem("lp-cart", JSON.stringify(items)); updateCartLabel(); }
+function updateCartLabel() {
+  const count = getCart().reduce((s, i) => s + i.cantidad, 0);
+  document.getElementById("cart-count-label").textContent = count > 0 ? `Carrito (${count})` : "Carrito";
+}
+function agregarAlCarrito(id, nombre, precio, foto_url, selectId) {
+  const select = document.getElementById(selectId);
+  const talla = select ? select.value : "";
+  const items = getCart();
+  const idx = items.findIndex((i) => i.id === id && i.talla === talla);
+  if (idx >= 0) items[idx].cantidad += 1;
+  else items.push({ id, nombre, precio: Number(precio), foto_url, talla, cantidad: 1 });
+  saveCart(items);
+  openCart();
+}
+function updateQty(id, talla, delta) {
+  let items = getCart().map((i) => (i.id === id && i.talla === talla ? { ...i, cantidad: i.cantidad + delta } : i)).filter((i) => i.cantidad > 0);
+  saveCart(items); renderCart();
+}
+function removeItem(id, talla) { saveCart(getCart().filter((i) => !(i.id === id && i.talla === talla))); renderCart(); }
+function cartTotal() { return getCart().reduce((s, i) => s + i.precio * i.cantidad, 0); }
+
+function openCart() {
+  document.getElementById("cart-drawer").classList.add("open");
+  document.getElementById("cart-overlay").classList.add("open");
+  document.getElementById("cart-items").classList.remove("hidden");
+  document.getElementById("cart-success").classList.add("hidden");
+  renderCart();
+}
+function closeCart() {
+  document.getElementById("cart-drawer").classList.remove("open");
+  document.getElementById("cart-overlay").classList.remove("open");
+}
+function cartSuccessContinue() { document.getElementById("cart-success").classList.add("hidden"); closeCart(); }
+
+function renderCart() {
+  const items = getCart();
+  const wrap = document.getElementById("cart-items");
+  const footer = document.getElementById("cart-footer");
+  if (items.length === 0) {
+    wrap.innerHTML = `<p class="empty-state">Aún no has agregado productos.</p>`;
+    footer.classList.add("hidden");
+    return;
+  }
+  wrap.innerHTML = items.map((i) => `
+    <div class="cart-line">
+      <img src="${i.foto_url}" alt="${i.nombre}" />
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between"><strong style="font-size:0.9rem">${i.nombre}</strong>
+          <button onclick="removeItem('${i.id}','${i.talla}')" style="background:none;border:none;color:#6f6a63">✕</button></div>
+        <div style="font-size:0.75rem;color:#6f6a63">Talla ${i.talla}</div>
+        <div style="font-size:0.85rem;margin-top:4px">$${(i.precio * i.cantidad).toFixed(2)}</div>
+        <div class="qty-controls"><button onclick="updateQty('${i.id}','${i.talla}',-1)">−</button><span>${i.cantidad}</span><button onclick="updateQty('${i.id}','${i.talla}',1)">+</button></div>
+      </div>
+    </div>`).join("");
+  footer.classList.remove("hidden");
+  document.getElementById("cart-total-label").textContent = `$${cartTotal().toFixed(2)}`;
+}
+
+async function enviarPedido(e) {
+  e.preventDefault();
+  const items = getCart();
+  if (items.length === 0) return false;
+  const btn = document.getElementById("co-submit");
+  btn.disabled = true; btn.textContent = "Enviando...";
+  const nombre = document.getElementById("co-nombre").value;
+  const telefono = document.getElementById("co-telefono").value;
+  const direccion = document.getElementById("co-direccion").value;
+  const total = cartTotal();
+  try {
+    const pedidoId = crypto.randomUUID();
+    const { error } = await supa.from("pedidos").insert({
+      id: pedidoId, cliente_nombre: nombre, cliente_telefono: telefono, cliente_direccion: direccion, total, estado: "pendiente"
+    });
+    if (error) throw error;
+    const lineas = items.map((i) => ({ pedido_id: pedidoId, producto_id: i.id, nombre_producto: i.nombre, talla: i.talla, cantidad: i.cantidad, precio_unitario: i.precio }));
+    await supa.from("pedido_items").insert(lineas);
+    await supa.from("notificaciones").insert({ tipo: "pedido_nuevo", mensaje: `Nuevo pedido de ${nombre || "cliente"} por $${total.toFixed(2)}`, pedido_id: pedidoId });
+    saveCart([]);
+    document.getElementById("cart-items").classList.add("hidden");
+    document.getElementById("cart-footer").classList.add("hidden");
+    document.getElementById("cart-success").classList.remove("hidden");
+  } catch (err) {
+    console.error(err);
+    alert("No se pudo enviar el pedido. Intenta de nuevo o escríbenos por WhatsApp.");
+  } finally {
+    btn.disabled = false; btn.textContent = "Enviar pedido";
+  }
+  return false;
+}
+
+// ---------------- WhatsApp ----------------
+document.getElementById("wa-link").href = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hola, vengo de la página Look Perfect y quisiera hacer una consulta.")}`;
+
+// ---------------- Chat interno ----------------
+let chatSubscrito = false;
+function toggleChat() {
+  const panel = document.getElementById("chat-panel");
+  panel.classList.toggle("open");
+  if (panel.classList.contains("open")) {
+    cargarChatCliente();
+    if (!chatSubscrito) {
+      chatSubscrito = true;
+      supa.channel("chat-" + clienteId)
+        .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensajes", filter: `cliente_id=eq.${clienteId}` }, (payload) => {
+          if (payload.new.remitente === "vendedora") pintarMensaje(payload.new);
+        })
+        .subscribe();
+    }
+  }
+}
+async function cargarChatCliente() {
+  const { data } = await supa.from("mensajes").select("*").eq("cliente_id", clienteId).order("creado_en", { ascending: true });
+  const body = document.getElementById("chat-body");
+  if (!data || data.length === 0) { body.innerHTML = `<p style="font-size:0.8rem;color:#6f6a63">Escríbenos tu pregunta sobre tallas, precios o pedidos.</p>`; return; }
+  body.innerHTML = "";
+  data.forEach(pintarMensaje);
+}
+function pintarMensaje(m) {
+  const body = document.getElementById("chat-body");
+  const div = document.createElement("div");
+  div.className = "chat-msg " + (m.remitente === "cliente" ? "cliente" : "vendedora");
+  div.textContent = m.contenido;
+  body.appendChild(div);
+  body.scrollTop = body.scrollHeight;
+}
+async function enviarChat(e) {
+  e.preventDefault();
+  const input = document.getElementById("chat-text");
+  const texto = input.value.trim();
+  if (!texto) return false;
+  input.value = "";
+  pintarMensaje({ remitente: "cliente", contenido: texto });
+  await supa.from("mensajes").insert({ cliente_id: clienteId, remitente: "cliente", contenido: texto });
+  return false;
+}
+
+// ---------------- Admin: login / logout ----------------
+async function verificarSesion() {
+  const { data } = await supa.auth.getSession();
+  return data.session;
+}
+async function adminLogin(e) {
+  e.preventDefault();
+  const btn = document.getElementById("login-btn");
+  const err = document.getElementById("login-error");
+  err.style.display = "none";
+  btn.disabled = true; btn.textContent = "Entrando...";
+  const { error } = await supa.auth.signInWithPassword({
+    email: document.getElementById("login-email").value,
+    password: document.getElementById("login-password").value,
+  });
+  btn.disabled = false; btn.textContent = "Entrar";
+  if (error) { err.textContent = "Correo o contraseña incorrectos."; err.style.display = "block"; return false; }
+  abrirPanelAdmin();
+  return false;
+}
+async function adminLogout() { await supa.auth.signOut(); goTo("admin-login"); }
+async function abrirPanelAdmin() {
+  goTo("admin-panel");
+  initTallasSelector();
+  cargarPedidos();
+}
+
+// ---------------- Admin: publicar producto ----------------
+let tallasSel = new Set();
+function initTallasSelector() {
+  const wrap = document.getElementById("pub-tallas");
+  if (wrap.dataset.init) return;
+  wrap.dataset.init = "1";
+  TALLAS.forEach((t) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "subcat-tab"; b.textContent = t;
+    b.onclick = () => {
+      if (tallasSel.has(t)) { tallasSel.delete(t); b.style.cssText = ""; }
+      else { tallasSel.add(t); b.style.cssText = "background:#1c1b19;color:white;border-color:#1c1b19"; }
+    };
+    wrap.appendChild(b);
+  });
+  document.getElementById("pub-foto").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const prev = document.getElementById("pub-preview");
+      prev.src = URL.createObjectURL(file);
+      prev.style.display = "block";
+    }
+  });
+  document.getElementById("pub-categoria").addEventListener("change", () => cargarSubcategoriasForm());
+  cargarSubcategoriasForm();
+}
+
+// Catálogos por defecto que aparecen la primera vez (antes de que la
+// dueña haya creado ninguno propio para esa categoría).
+const CATALOGOS_BASE = ["Pullover", "Camisa", "Blusa", "Pantalón", "Short", "Vestido", "Falda", "Chaqueta"];
+
+async function cargarSubcategoriasForm() {
+  const cat = document.getElementById("pub-categoria").value;
+  const select = document.getElementById("pub-subcategoria");
+  const valorPrevio = select.value;
+  const { data } = await supa.from("productos").select("subcategoria").eq("categoria", cat);
+  const existentes = [...new Set((data || []).map((d) => d.subcategoria))];
+  const todas = [...new Set([...existentes, ...CATALOGOS_BASE])].sort((a, b) => a.localeCompare(b, "es"));
+  select.innerHTML =
+    todas.map((s) => `<option value="${s}">${s}</option>`).join("") +
+    `<option value="__nuevo__">➕ Crear catálogo nuevo…</option>`;
+  if (todas.includes(valorPrevio)) select.value = valorPrevio;
+  onCambioSubcategoriaForm();
+}
+
+function onCambioSubcategoriaForm() {
+  const select = document.getElementById("pub-subcategoria");
+  const wrap = document.getElementById("pub-subcategoria-nueva-wrap");
+  const input = document.getElementById("pub-subcategoria-nueva");
+  if (select.value === "__nuevo__") {
+    wrap.classList.remove("hidden");
+    input.required = true;
+  } else {
+    wrap.classList.add("hidden");
+    input.required = false;
+  }
+}
+async function publicarProducto(e) {
+  e.preventDefault();
+  const msg = document.getElementById("pub-mensaje");
+  const btn = document.getElementById("pub-submit");
+  const fotoInput = document.getElementById("pub-foto");
+  const foto = fotoInput.files[0];
+  if (!foto) { msg.textContent = "Sube una foto del producto."; return false; }
+  btn.disabled = true; btn.textContent = "Publicando..."; msg.textContent = "";
+  try {
+    const categoria = document.getElementById("pub-categoria").value;
+    const selectSub = document.getElementById("pub-subcategoria");
+    const subcategoria = selectSub.value === "__nuevo__"
+      ? document.getElementById("pub-subcategoria-nueva").value.trim()
+      : selectSub.value;
+    if (!subcategoria) { msg.textContent = "Escribe el nombre del catálogo nuevo."; btn.disabled = false; btn.textContent = "Publicar producto"; return false; }
+
+    const ext = foto.name.split(".").pop();
+    const path = `${categoria}/${crypto.randomUUID()}.${ext}`;
+    const { error: uploadError } = await supa.storage.from("productos").upload(path, foto);
+    if (uploadError) throw uploadError;
+    const { data: pub } = supa.storage.from("productos").getPublicUrl(path);
+    const { error: insertError } = await supa.from("productos").insert({
+      nombre: document.getElementById("pub-nombre").value,
+      precio: Number(document.getElementById("pub-precio").value),
+      descripcion: document.getElementById("pub-descripcion").value,
+      categoria, subcategoria,
+      tallas: [...tallasSel], foto_url: pub.publicUrl, publicado: true,
+    });
+    if (insertError) throw insertError;
+    msg.textContent = "Producto publicado correctamente" + (selectSub.value === "__nuevo__" ? ` en el nuevo catálogo "${subcategoria}".` : ".");
+    e.target.reset();
+    document.getElementById("pub-preview").style.display = "none";
+    document.getElementById("pub-subcategoria-nueva-wrap").classList.add("hidden");
+    tallasSel.clear();
+    document.querySelectorAll("#pub-tallas button").forEach((b) => (b.style.cssText = ""));
+    cargarSubcategoriasForm();
+  } catch (err) {
+    console.error(err);
+    msg.textContent = "Ocurrió un error al publicar. Intenta de nuevo.";
+  } finally {
+    btn.disabled = false; btn.textContent = "Publicar producto";
+  }
+  return false;
+}
+
+// ---------------- Admin: navegación de secciones ----------------
+function showAdminSection(sec) {
+  document.querySelectorAll(".admin-nav button").forEach((b) => b.classList.toggle("active", b.dataset.sec === sec));
+  document.querySelectorAll(".admin-sec").forEach((s) => s.classList.add("hidden"));
+  document.getElementById("admin-sec-" + sec).classList.remove("hidden");
+  if (sec === "pedidos") cargarPedidos();
+  if (sec === "editar") cargarProductosAdmin();
+  if (sec === "mensajes") cargarClientesChat();
+}
+
+// ---------------- Admin: pedidos ----------------
+async function cargarPedidos() {
+  const { data } = await supa.from("pedidos").select("*").order("creado_en", { ascending: false });
+  const pedidos = data || [];
+  const hoy = new Date().toDateString();
+  const totalHoy = pedidos.filter((p) => new Date(p.creado_en).toDateString() === hoy).reduce((s, p) => s + Number(p.total), 0);
+  const vendidos = pedidos.filter((p) => p.vendido === "si").length;
+  const noVendidos = pedidos.filter((p) => p.vendido === "no").length;
+  document.getElementById("pedidos-stats").innerHTML = `
+    <div class="stat-box"><div class="n">${pedidos.length}</div><div class="l">Total pedidos</div></div>
+    <div class="stat-box"><div class="n">${pedidos.filter((p) => p.estado === "pendiente").length}</div><div class="l">Pendientes</div></div>
+    <div class="stat-box"><div class="n">$${totalHoy.toFixed(2)}</div><div class="l">Ventas hoy</div></div>
+    <div class="stat-box"><div class="n">${vendidos}</div><div class="l">Vendidos</div></div>
+    <div class="stat-box"><div class="n">${noVendidos}</div><div class="l">No vendidos</div></div>`;
+  const table = document.getElementById("pedidos-table");
+  const empty = document.getElementById("pedidos-empty");
+  if (pedidos.length === 0) { table.classList.add("hidden"); empty.classList.remove("hidden"); return; }
+  table.classList.remove("hidden"); empty.classList.add("hidden");
+  document.getElementById("pedidos-body").innerHTML = pedidos.map((p) => `
+    <tr>
+      <td>${p.cliente_nombre}<br><span style="color:#6f6a63;font-size:0.75rem">${p.cliente_direccion || ""}</span></td>
+      <td>${p.cliente_telefono}</td>
+      <td>$${Number(p.total).toFixed(2)}</td>
+      <td><select onchange="cambiarEstadoPedido('${p.id}', this.value)">
+        <option value="pendiente" ${p.estado === "pendiente" ? "selected" : ""}>Pendiente</option>
+        <option value="confirmado" ${p.estado === "confirmado" ? "selected" : ""}>Confirmado</option>
+        <option value="enviado" ${p.estado === "enviado" ? "selected" : ""}>Enviado</option>
+      </select></td>
+      <td><select onchange="cambiarVendido('${p.id}', this.value)">
+        <option value="pendiente" ${p.vendido === "pendiente" ? "selected" : ""}>Sin confirmar</option>
+        <option value="si" ${p.vendido === "si" ? "selected" : ""}>✅ Vendido</option>
+        <option value="no" ${p.vendido === "no" ? "selected" : ""}>❌ No vendido</option>
+      </select></td>
+      <td>${new Date(p.creado_en).toLocaleString("es-CU")}</td>
+      <td><button class="btn btn-outline" onclick="eliminarPedido('${p.id}')">Eliminar</button></td>
+    </tr>`).join("");
+}
+async function cambiarEstadoPedido(id, estado) { await supa.from("pedidos").update({ estado }).eq("id", id); }
+async function cambiarVendido(id, vendido) { await supa.from("pedidos").update({ vendido }).eq("id", id); cargarPedidos(); }
+async function eliminarPedido(id) {
+  if (!confirm("¿Eliminar este pedido? No se puede deshacer.")) return;
+  await supa.from("pedidos").delete().eq("id", id);
+  cargarPedidos();
+}
+async function vaciarPedidos() {
+  if (!confirm("¿Vaciar TODOS los pedidos? Esto borra el historial completo y no se puede deshacer.")) return;
+  await supa.from("pedidos").delete().neq("id", "00000000-0000-0000-0000-000000000000");
+  cargarPedidos();
+}
+
+// ---------------- Admin: editar productos ----------------
+async function cargarProductosAdmin() {
+  const { data } = await supa.from("productos").select("*").order("creado_en", { ascending: false });
+  const productos = data || [];
+  document.getElementById("editar-body").innerHTML = productos.map((p) => `
+    <tr>
+      <td><img src="${p.foto_url}" alt="${p.nombre}" style="width:44px;height:56px;object-fit:cover" /></td>
+      <td>${p.nombre}</td>
+      <td>${p.categoria} / ${p.subcategoria}</td>
+      <td>$${Number(p.precio).toFixed(2)}</td>
+      <td><span class="badge ${p.publicado ? "enviado" : "pendiente"}">${p.publicado ? "Publicado" : "Oculto"}</span></td>
+      <td style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline" onclick="abrirEditar('${p.id}')">Editar</button>
+        <button class="btn btn-outline" onclick="togglePublicado('${p.id}', ${p.publicado})">${p.publicado ? "Ocultar" : "Publicar"}</button>
+        <button class="btn btn-outline" onclick="eliminarProducto('${p.id}')">Eliminar</button>
+      </td>
+    </tr>`).join("");
+}
+async function togglePublicado(id, actual) { await supa.from("productos").update({ publicado: !actual }).eq("id", id); cargarProductosAdmin(); }
+async function eliminarProducto(id) { if (!confirm("¿Eliminar este producto?")) return; await supa.from("productos").delete().eq("id", id); cargarProductosAdmin(); }
+
+// ---------------- Admin: editar producto (modal completo) ----------------
+let productoEditandoId = null;
+let tallasSelEdit = new Set();
+
+async function abrirEditar(id) {
+  const { data: p } = await supa.from("productos").select("*").eq("id", id).single();
+  if (!p) return;
+  productoEditandoId = id;
+  document.getElementById("edit-foto-actual").src = p.foto_url;
+  document.getElementById("edit-foto-nueva").value = "";
+  document.getElementById("edit-nombre").value = p.nombre;
+  document.getElementById("edit-precio").value = p.precio;
+  document.getElementById("edit-descripcion").value = p.descripcion;
+  document.getElementById("edit-categoria").value = p.categoria;
+  document.getElementById("edit-publicado").value = String(p.publicado);
+  await cargarSubcategoriasEdit(p.subcategoria);
+  tallasSelEdit = new Set(p.tallas || []);
+  renderTallasEdit();
+  document.getElementById("edit-mensaje").textContent = "";
+  document.getElementById("edit-modal").style.display = "block";
+  document.getElementById("edit-overlay").classList.add("open");
+}
+function cerrarEditar() {
+  document.getElementById("edit-modal").style.display = "none";
+  document.getElementById("edit-overlay").classList.remove("open");
+  productoEditandoId = null;
+}
+function renderTallasEdit() {
+  const wrap = document.getElementById("edit-tallas");
+  wrap.innerHTML = "";
+  TALLAS.forEach((t) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "subcat-tab"; b.textContent = t;
+    if (tallasSelEdit.has(t)) b.style.cssText = "background:#1c1b19;color:white;border-color:#1c1b19";
+    b.onclick = () => {
+      if (tallasSelEdit.has(t)) { tallasSelEdit.delete(t); b.style.cssText = ""; }
+      else { tallasSelEdit.add(t); b.style.cssText = "background:#1c1b19;color:white;border-color:#1c1b19"; }
+    };
+    wrap.appendChild(b);
+  });
+}
+async function cargarSubcategoriasEdit(seleccionar) {
+  const cat = document.getElementById("edit-categoria").value;
+  const select = document.getElementById("edit-subcategoria");
+  const { data } = await supa.from("productos").select("subcategoria").eq("categoria", cat);
+  const existentes = [...new Set((data || []).map((d) => d.subcategoria))];
+  const todas = [...new Set([...existentes, ...CATALOGOS_BASE])].sort((a, b) => a.localeCompare(b, "es"));
+  select.innerHTML = todas.map((s) => `<option value="${s}">${s}</option>`).join("") + `<option value="__nuevo__">➕ Crear catálogo nuevo…</option>`;
+  if (seleccionar && todas.includes(seleccionar)) select.value = seleccionar;
+  onCambioSubcategoriaEdit();
+}
+function onCambioSubcategoriaEdit() {
+  const select = document.getElementById("edit-subcategoria");
+  const wrap = document.getElementById("edit-subcategoria-nueva-wrap");
+  wrap.classList.toggle("hidden", select.value !== "__nuevo__");
+}
+async function guardarEdicion(e) {
+  e.preventDefault();
+  if (!productoEditandoId) return false;
+  const btn = document.getElementById("edit-submit");
+  const msg = document.getElementById("edit-mensaje");
+  btn.disabled = true; btn.textContent = "Guardando...";
+  try {
+    const categoria = document.getElementById("edit-categoria").value;
+    const selectSub = document.getElementById("edit-subcategoria");
+    const subcategoria = selectSub.value === "__nuevo__"
+      ? document.getElementById("edit-subcategoria-nueva").value.trim()
+      : selectSub.value;
+    if (!subcategoria) { msg.textContent = "Escribe el nombre del catálogo nuevo."; btn.disabled = false; btn.textContent = "Guardar cambios"; return false; }
+
+    const updates = {
+      nombre: document.getElementById("edit-nombre").value,
+      precio: Number(document.getElementById("edit-precio").value),
+      descripcion: document.getElementById("edit-descripcion").value,
+      categoria, subcategoria,
+      tallas: [...tallasSelEdit],
+      publicado: document.getElementById("edit-publicado").value === "true",
+    };
+
+    const nuevaFoto = document.getElementById("edit-foto-nueva").files[0];
+    if (nuevaFoto) {
+      const ext = nuevaFoto.name.split(".").pop();
+      const path = `${categoria}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supa.storage.from("productos").upload(path, nuevaFoto);
+      if (upErr) throw upErr;
+      const { data: pub } = supa.storage.from("productos").getPublicUrl(path);
+      updates.foto_url = pub.publicUrl;
+    }
+
+    const { error } = await supa.from("productos").update(updates).eq("id", productoEditandoId);
+    if (error) throw error;
+    cerrarEditar();
+    cargarProductosAdmin();
+  } catch (err) {
+    console.error(err);
+    msg.textContent = "Ocurrió un error al guardar. Intenta de nuevo.";
+  } finally {
+    btn.disabled = false; btn.textContent = "Guardar cambios";
+  }
+  return false;
+}
+
+// ---------------- Admin: mensajes ----------------
+async function cargarClientesChat() {
+  const { data } = await supa.from("mensajes").select("cliente_id, creado_en").order("creado_en", { ascending: false });
+  const clientes = [...new Set((data || []).map((d) => d.cliente_id))];
+  const wrap = document.getElementById("msg-clientes");
+  if (clientes.length === 0) { wrap.innerHTML = `<p style="font-size:0.85rem;color:#6f6a63">Sin conversaciones aún.</p>`; return; }
+  wrap.innerHTML = clientes.map((c) => `<button onclick="abrirConversacionAdmin('${c}')" style="display:block;width:100%;text-align:left;padding:10px 12px;margin-bottom:4px;background:white;color:#1c1b19;border:1px solid #e6d9bd;font-size:0.8rem">Cliente ${c.slice(0, 8)}</button>`).join("");
+}
+async function abrirConversacionAdmin(clienteIdSel) {
+  const panel = document.getElementById("msg-panel");
+  panel.innerHTML = `
+    <div style="background:white;border:1px solid #e6d9bd;display:flex;flex-direction:column;height:420px">
+      <div class="chat-body" id="admin-chat-body" style="flex:1"></div>
+      <form class="chat-input" onsubmit="return responderChat(event,'${clienteIdSel}')">
+        <input id="admin-chat-text" placeholder="Responder..." autocomplete="off" />
+        <button type="submit">Enviar</button>
+      </form>
+    </div>`;
+  async function cargar() {
+    const { data } = await supa.from("mensajes").select("*").eq("cliente_id", clienteIdSel).order("creado_en", { ascending: true });
+    const body = document.getElementById("admin-chat-body");
+    if (!body) return;
+    body.innerHTML = (data || []).map((m) => `<div class="chat-msg ${m.remitente === "vendedora" ? "cliente" : "vendedora"}">${m.contenido}</div>`).join("");
+    body.scrollTop = body.scrollHeight;
+  }
+  await cargar();
+  supa.channel("admin-chat-" + clienteIdSel)
+    .on("postgres_changes", { event: "INSERT", schema: "public", table: "mensajes", filter: `cliente_id=eq.${clienteIdSel}` }, (payload) => {
+      if (payload.new.remitente === "cliente") cargar();
+    })
+    .subscribe();
+  window.__cargarChatActivo = cargar;
+}
+async function responderChat(e, clienteIdSel) {
+  e.preventDefault();
+  const input = document.getElementById("admin-chat-text");
+  const texto = input.value.trim();
+  if (!texto) return false;
+  input.value = "";
+  const body = document.getElementById("admin-chat-body");
+  if (body) {
+    const div = document.createElement("div");
+    div.className = "chat-msg cliente";
+    div.textContent = texto;
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+  }
+  await supa.from("mensajes").insert({ cliente_id: clienteIdSel, remitente: "vendedora", contenido: texto });
+  return false;
+}
+
+// ---------------- Arranque ----------------
+updateCartLabel();
+
+// Si alguien entra directo a la vista de admin y ya tiene sesión, lo mandamos al panel
+document.querySelector('[onclick="goTo(\'admin-login\')"]').addEventListener("click", async () => {
+  const session = await verificarSesion();
+  if (session) abrirPanelAdmin();
+});
+</script>
+</body>
+</html>
